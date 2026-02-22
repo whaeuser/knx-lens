@@ -34,8 +34,9 @@ load_dotenv()
 
 # Versucht, die IP-Adresse aus der .env-Datei zu lesen
 # os.getenv() gibt None zurück, wenn die Variable nicht gesetzt ist
-webserver_ip   = os.getenv("WEBSERVER_IP")
-webserver_port = os.getenv("WEBSERVER_PORT")
+webserver_ip         = os.getenv("WEBSERVER_IP")
+webserver_port       = os.getenv("WEBSERVER_PORT")
+webserver_public_url = os.getenv("WEBSERVER_PUBLIC_URL")
 
 # Prüft, ob eine IP in der .env-Datei konfiguriert wurde
 if webserver_ip:
@@ -60,6 +61,6 @@ server.host = webserver_ip
 server.port = webserver_port
 server.title = "KNX-Lens"
 # Stellt sicher, dass die Portnummer im String enthalten ist
-server.public_url = f"http://{webserver_ip}:{webserver_port}"
+server.public_url = webserver_public_url or f"http://{webserver_ip}:{webserver_port}"
 server.serve()
 print("-" * 30)
