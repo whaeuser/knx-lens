@@ -72,6 +72,7 @@ class KNXLens(App, KNXTuiLogic):
         Binding("d", "delete_item", "Delete", show=False),
         Binding("r", "reload_log_file", "Reload", show=False),
         Binding("t", "toggle_log_reload", "Auto-Reload", show=False),
+        Binding("v", "toggle_stack_view", "Stack View", show=False),
         binding_i_time_filter,
         binding_enter_load_file,
         binding_l_reload_filters,
@@ -115,6 +116,7 @@ class KNXLens(App, KNXTuiLogic):
         self.last_log_position: int = 0
         self.last_log_size: int = 0
         self.paging_warning_shown: bool = False
+        self.stack_view: bool = False
         self.max_log_lines = int(self.config.get('max_log_lines', 10000))
         self.reload_interval = float(self.config.get('reload_interval', 1.0))
 
@@ -164,6 +166,7 @@ class KNXLens(App, KNXTuiLogic):
             "log_pane": [
                 Binding("r", "reload_log_file", "Reload"),
                 Binding("t", "toggle_log_reload", "Auto-Reload"),
+                Binding("v", "toggle_stack_view", "Stack View"),
                 binding_i_time_filter,
             ],
             "files_pane": [
@@ -513,6 +516,12 @@ class KNXLens(App, KNXTuiLogic):
 
     def action_reload_log_file(self) -> None:
         self._reload_log_file_sync()
+
+    def action_toggle_stack_view(self) -> None:
+        self.stack_view = not self.stack_view
+        self._process_log_lines()
+        mode = "Stack (newest first)" if self.stack_view else "List (newest last)"
+        self.notify(f"Log view: {mode}")
     
     def action_save_filter(self) -> None:
         if not self.selected_gas:

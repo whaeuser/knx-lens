@@ -325,15 +325,20 @@ class KNXTuiLogic:
             if found_count > self.max_log_lines:
                 rows_to_add = rows_to_add[-self.max_log_lines:]
                 if not self.paging_warning_shown:
-                    self.paging_warning_shown = True 
+                    self.paging_warning_shown = True
+
+            if self.stack_view:
+                rows_to_add = list(reversed(rows_to_add))
 
             self.log_widget.add_rows(rows_to_add)
-            
+
             duration = time.time() - start_time
             caption_str = f"{len(rows_to_add)} entries shown. ({duration:.2f}s)"
             self.log_caption_label.update(caption_str)
 
-            if is_at_bottom:
+            if self.stack_view:
+                self.log_widget.scroll_home(animate=False)
+            elif is_at_bottom:
                 self.log_widget.scroll_end(animate=False, duration=0.0)
 
         except Exception as e:
@@ -442,12 +447,14 @@ class KNXTuiLogic:
             
             if not has_any_or_filter and not has_global_regex_filter and total_rows > self.max_log_lines + 1000:
                 self.log_view_is_dirty = True
-                self._refilter_log_view() 
+                self._refilter_log_view()
+            elif self.stack_view:
+                self._process_log_lines()
             else:
                 self.log_widget.add_rows(rows_to_add)
                 if is_at_bottom:
                     self.log_widget.scroll_end(animate=False, duration=0.0)
-                
+
                 # Update caption after adding rows
                 if self.log_caption_label:
                     total_displayed = self.log_widget.row_count
