@@ -2,6 +2,7 @@ from textual_serve.server import Server
 from dotenv import load_dotenv
 import socket
 import os
+import sys
 
 def get_local_ip():
     """
@@ -54,7 +55,7 @@ else:
 
 # Der Server wird mit der ermittelten oder konfigurierten IP gestartet
 print("-" * 30)
-server = Server("python -m knx-lens")
+server = Server(f"{sys.executable} knx-lens.py")
 server.host = webserver_ip
 server.port = webserver_port
 server.title = "KNX-Lens"
